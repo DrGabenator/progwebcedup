@@ -5,6 +5,8 @@ const header = document.getElementById('headerAtual')
 const body = document.body
 const formLogin = document.getElementById('login-form')
 const formRegister = document.getElementById('register-form')
+const formCep = document.getElementById('cep-form')
+const resultadoCep = document.getElementById('resultadoCep')
 
 botao.addEventListener('click', function() {
     paragrafo.textContent = 'outra frase'
@@ -34,4 +36,38 @@ formRegister.addEventListener('submit', function(e) {
     const cpf = document.getElementById('cpf').value
 
     console.log(primeiroNome, sobreNome, dataNascimento, email, senha, cpf)
+});
+
+formCep.addEventListener('submit', async function(e) {
+
+    e.preventDefault()
+
+    const cep = document.getElementById('cep').value
+
+    try {
+
+        const resposta = await fetch(`https://viacep.com.br/ws/${cep}/json/`)
+
+        const dados = await resposta.json()
+
+        if(dados.erro) {
+            resultadoCep.innerHTML = 'CEP não encontrado!'
+            return
+        }
+
+        resultadoCep.innerHTML = `
+            <h3>Resultado:</h3>
+            <p><strong>Rua:</strong> ${dados.logradouro}</p>
+            <p><strong>Bairro:</strong> ${dados.bairro}</p>
+            <p><strong>Cidade:</strong> ${dados.localidade}</p>
+            <p><strong>Estado:</strong> ${dados.uf}</p>
+        `
+
+    } catch(error) {
+
+        resultadoCep.innerHTML = 'Erro ao consultar a API!'
+
+        console.log(error)
+    }
+
 });
